@@ -1,0 +1,167 @@
+
+<style>
+body{background:#f4f6f9;}
+.main{margin-left:0px;padding:25px;}
+.info-bar{
+ background:#eef3ff;
+ border-left:5px solid #0d6efd;
+ padding:12px 18px;
+ border-radius:6px;
+ font-weight:600;
+}
+.table tbody tr:hover{background:#f1f6ff;}
+</style>
+
+<div class="w-100 ">
+<div class="w-100 mb-2 px-1 py-2 fw-bold card shadow ">Stipend List </div>
+<div class="card shadow">
+
+
+
+<div class="card-body">
+
+<!-- Filter + Download -->
+<div class="row g-3 align-items-end mb-4">
+<div class="col-md-3">
+<select id="classSelect" class="form-select">
+<option value="">Class</option>
+<option value="6">6</option>
+<option value="7">7</option>
+</select>
+</div>
+
+<div class="col-md-3">
+<select id="sectionSelect" class="form-select">
+<option value="">Section</option>
+<option value="A">A</option>
+<option value="B">B</option>
+</select>
+</div>
+
+<div class="col-md-2">
+<button class="btn btn-primary w-100" onclick="loadStudents()">
+<i class="bi bi-search"></i> Load
+</button>
+</div>
+
+<div class="col-md-4 text-end">
+<button class="btn btn-success me-2" onclick="downloadExcel()">
+<i class="bi bi-file-earmark-excel"></i> XLSX
+</button>
+<button class="btn btn-danger" onclick="downloadPDF()">
+<i class="bi bi-file-earmark-pdf"></i> PDF
+</button>
+</div>
+</div>
+
+<!-- Summary Info -->
+<div id="summaryBar" class="info-bar mb-3 d-none">
+<i class="bi bi-info-circle me-2"></i>
+Class: <span id="sumClass"></span> |
+Section: <span id="sumSection"></span> |
+Total Students: <span id="sumTotal"></span>
+</div>
+
+<!-- Table -->
+<div class="table-responsive">
+<table class="table table-bordered text-center align-middle">
+<thead class="table-dark">
+<tr>
+<th>MIS ID</th>
+<th>Roll</th>
+<th>Name</th>
+<th>Father</th>
+<th>Status</th>
+<th width="110">Action</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody id="studentTable">
+<tr><td colspan="6">Please load data</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+let students=[
+{class:"6",section:"A", mis:123, roll:1,name:"Rahim",father:"Karim",status:"Active", comment:"Low Attendance"},
+{class:"6",section:"A", mis:124, roll:2,name:"Karima",status:"Active", comment:"Not Pass", father:"Jamal"},
+{class:"7",section:"B",  mis:125,roll:1,name:"Hasan",status:"Active", comment:"Low Attendance",father:"Kamal"},
+{class:"6",section:"A", mis:126, roll:3,name:"Raju Islam",status:"Deactive", comment:"Low Attendance",father:"Kamal",}
+];
+
+let currentList=[];
+
+function loadStudents(){
+const cls=classSelect.value;
+const sec=sectionSelect.value;
+studentTable.innerHTML="";
+currentList=students.filter(s=>s.class===cls && s.section===sec);
+
+if(!currentList.length){
+summaryBar.classList.add("d-none");
+studentTable.innerHTML=`<tr><td colspan="6">No data found</td></tr>`;
+return;
+}
+
+sumClass.innerText=cls;
+sumSection.innerText=sec;
+sumTotal.innerText=currentList.length;
+summaryBar.classList.remove("d-none");
+
+currentList.forEach((s,i)=>{
+studentTable.innerHTML+=`
+<tr>
+<td>${s.mis}</td>
+<td>${s.roll}</td>
+<td>${s.name}</td>
+<td>${s.father}</td>
+<td><span class="badge ${s.status==="Active"?"bg-success":"bg-danger"}">${s.status}</span></td>
+<td>
+<select class="px-1 bg-light">
+    <option value="">Select--</option>
+    <option value="">Active</option>
+    <option value="">Deactive</option>
+</select>
+</td>
+<td>${s.comment}</td>
+</tr>`;
+});
+}
+
+function editStudent(i){
+editIndex.value=i;
+editName.value=currentList[i].name;
+editFather.value=currentList[i].father;
+editMother.value=currentList[i].mother;
+new bootstrap.Modal(editModal).show();
+}
+
+function saveEdit(){
+let i=editIndex.value;
+currentList[i].name=editName.value;
+currentList[i].father=editFather.value;
+currentList[i].mother=editMother.value;
+loadStudents();
+bootstrap.Modal.getInstance(editModal).hide();
+}
+
+function deleteStudent(i){
+if(confirm("Are you sure?")){
+students.splice(students.indexOf(currentList[i]),1);
+loadStudents();
+}
+}
+
+function downloadExcel(){
+
+}
+
+function downloadPDF(){
+
+}
+</script>
